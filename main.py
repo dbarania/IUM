@@ -1,12 +1,11 @@
 from typing import Optional, Literal
 from fastapi import FastAPI
-from pydantic import BaseModel
+from utils import ReviewItem
+from ReviewsApp import SummarizeApp
 
 app = FastAPI()
-
+sumapp = SummarizeApp()
 
 @app.post("/summarize")
-def summarize(model: Optional[Literal["original", "testing"]] = None):
-    if model is None:
-        return {"model": "Model is empty"}
-    return {"model": model}
+def summarize(review: ReviewItem, model: Optional[Literal["base", "complex"]] = None):
+    return sumapp(review, model)
