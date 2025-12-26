@@ -4,3 +4,8 @@ jupyterlab
 pandas
 numpy
 matplotlib
+transformers
+torch
+torchvision
+ipywidgets
+jupyter
