@@ -2,9 +2,10 @@ import csv
 import os
 from langdetect import detect
 from alphabet_detector.alphabet_detector import AlphabetDetector
-from utils import TranslatedItem
+from utils import TranslatedItem, force_cleanup
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, BitsAndBytesConfig
 import torch
+from loguru import logger
 
 
 class Translator:
@@ -22,20 +23,22 @@ class Translator:
         translated_text = ""
         if source_code != "":
             translated_text = self.translate(text, source_code)
-
+        else:
+            logger.warning(f"[lang codes failure]:{text} | {lang} | {alph}")
+        self._model.to("cpu")
+        force_cleanup()
         return TranslatedItem(translation=translated_text,
                               source_language=lang,
                               source_alphabet=alph)
 
     def translate(self, text: str, code: str, target_lang_code="eng_Latn") -> str:
+
         if code == target_lang_code:
             return text
         self._tokenizer.src_lang = code
-        inputs = self._tokenizer(text, return_tensors="pt").to(self._model.device)
+        self._model.to("cuda")
+        inputs = self._tokenizer(text, return_tensors="pt").to("cuda")
 
-        # translated_tokens = model.generate(
-        #     **inputs, forced_bos_token_id=tokenizer.convert_tokens_to_ids("fra_Latn"), max_length=30,
-        # )
         generated_tokens = self._model.generate(
             **inputs,
             forced_bos_token_id=self._tokenizer.convert_tokens_to_ids(target_lang_code))
@@ -46,9 +49,9 @@ class Translator:
         self._config_path = config
         self.reload_config()
         model_id = "facebook/nllb-200-distilled-600M"
-        # bnb_config = BitsAndBytesConfig(load_in_8bit=True)
         self._tokenizer = AutoTokenizer.from_pretrained(model_id)
         self._model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
+        self._model.to("cpu")
 
     def reload_config(self):
         if os.path.isfile(self._config_path):

@@ -1,28 +1,38 @@
-from transformers import pipeline
-from utils import ReviewItem, SummarizedItem
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+from utils import ReviewItem, SummarizedItem, force_cleanup
 
 
 class SummaryGenerator:
     def __init__(self, model_name: str) -> None:
         self._model_name = model_name
-        self._tokenizer = model_name
-
-        self._model = pipeline("summarization", model=self._model_name, tokenizer=self._tokenizer)
+        self._tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self._model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        self._model.to("cpu")
 
     def __call__(self, review: ReviewItem) -> SummarizedItem:
         assert type(review) == ReviewItem
-        summary = self._model(
+        self._model.to("cuda")
+
+        inputs = self._tokenizer(
             review.comment,
+            return_tensors="pt",
+            max_length=1024,
+            truncation=True
+        ).to("cuda")
+        summary_ids = self._model.generate(
+            inputs["input_ids"],
             max_length=100,
             min_length=20,
-            do_sample=False
+            do_sample=False,
+            num_beams=4,
+            num_return_sequences=1,
+            early_stopping=True,
+            length_penalty = 2.0,
+            no_repeat_ngram_size=3
         )
 
-        return SummarizedItem(summarized_comment=summary[0]['summary_text'], confidence=0.0)
+        summary = self._tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+        self._model.to("cpu")
+        force_cleanup()
 
-if __name__ == "__main__":
-    text = "Tim and Pippa are lovely, so welcoming and friendly. It’s an excellent location for getting into town as it’s just around the corner from the tube. They also provided a great breakfast with homemade jam! Things to note are a comfy bed and great private bathroom. We’re looking forward to going back to stay next week!"
-    item = ReviewItem(comment=text, rate=5)
-    model = SummaryGenerator("VisteK528/facebook-bart-cnn-ium-v1")
-    out = model(item)
-    print(out.summarized_comment)
+        return SummarizedItem(summarized_comment=summary, confidence=0.0)
