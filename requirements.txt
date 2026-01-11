@@ -1,12 +1,9 @@
 fastapi[standard]
 pydantic
-jupyterlab
-pandas
-numpy
-matplotlib
 transformers
 torch
 torchvision
-ipywidgets
-jupyter
 loguru
+alphabet-detector
+langdetect
+protobuf

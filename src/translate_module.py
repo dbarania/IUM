@@ -6,6 +6,7 @@ from utils import TranslatedItem, force_cleanup
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, BitsAndBytesConfig
 import torch
 from loguru import logger
+from utils import get_weight_dir
 
 
 class Translator:
@@ -48,9 +49,9 @@ class Translator:
     def setup(self, config: str):
         self._config_path = config
         self.reload_config()
-        model_id = "facebook/nllb-200-distilled-600M"
-        self._tokenizer = AutoTokenizer.from_pretrained(model_id)
-        self._model = AutoModelForSeq2SeqLM.from_pretrained(model_id)
+        weights_dir = get_weight_dir('facebook--nllb-200-distilled-600M')
+        self._tokenizer = AutoTokenizer.from_pretrained(weights_dir)
+        self._model = AutoModelForSeq2SeqLM.from_pretrained(weights_dir)
         self._model.to("cpu")
 
     def reload_config(self):

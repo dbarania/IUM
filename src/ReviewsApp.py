@@ -8,8 +8,8 @@ from loguru import logger
 
 class SummarizeApp:
     def __init__(self):
-        base_model_name = "Falconsai/text_summarization"
-        complex_model_name = "VisteK528/facebook-bart-cnn-ium-v1"
+        base_model_name = "facebook--bart-large-cnn"
+        complex_model_name = "VisteK528--facebook-bart-cnn-ium-v3"
         self._translator = Translator()
         self._translator.setup("translator_config")
         self._base_model = SummaryGenerator(base_model_name)
@@ -32,19 +32,21 @@ class SummarizeApp:
         return result
 
     def run_base(self, item: ReviewItem) -> SummarizedItem:
+        item_src = item.comment
         translated = self._translator(item.comment)
         item.comment = translated.translation
         summary = self._base_model(item)
         logger.info(
-            f"[user]:{item.comment}|{item.rate}|{translated.translation}|{translated.source_alphabet}|{translated.source_language}|{summary.summarized_comment}|{summary.confidence}")
+            f"[user]:{item_src}|{item.rate}|{translated.translation}|{translated.source_alphabet}|{translated.source_language}|{summary.summarized_comment}|{summary.confidence}")
         return summary
 
     def run_complex(self, item: ReviewItem) -> SummarizedItem:
+        item_src = item.comment
         translated = self._translator(item.comment)
         item.comment = translated.translation
         summary = self._complex_model(item)
         logger.info(
-            f"[user]:{item.comment}|{item.rate}|{translated.translation}|{translated.source_alphabet}|{translated.source_language}|{summary.summarized_comment}|{summary.confidence}")
+            f"[user]:{item_src}|{item.rate}|{translated.translation}|{translated.source_alphabet}|{translated.source_language}|{summary.summarized_comment}|{summary.confidence}")
         return summary
 
     def log(self):

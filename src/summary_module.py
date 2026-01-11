@@ -1,12 +1,13 @@
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-from utils import ReviewItem, SummarizedItem, force_cleanup
+from utils import ReviewItem, SummarizedItem, force_cleanup, get_weight_dir
 
 
 class SummaryGenerator:
     def __init__(self, model_name: str) -> None:
         self._model_name = model_name
-        self._tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self._model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        weights_dir = get_weight_dir(model_name)
+        self._tokenizer = AutoTokenizer.from_pretrained(weights_dir)
+        self._model = AutoModelForSeq2SeqLM.from_pretrained(weights_dir)
         self._model.to("cpu")
 
     def __call__(self, review: ReviewItem) -> SummarizedItem:
