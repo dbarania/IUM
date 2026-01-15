@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  ium_service:
+    image: ium_image:latest
+    container_name: ium-summary-srv
+    ports:
+      - "8000:8000"
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

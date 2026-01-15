@@ -1,6 +1,12 @@
 # Machine Learning Engineering 2025/2026
 
+How to run the app in docker container?
+1. Build the image from source
+```bash
+docker build -t ium_image .
+```
 
->docker build -t ium .
-
->docker run --gpus all -it -p 8888:8888 -p 8000:8000 -v $(pwd):/app ium 
+2. Run the app 
+```bash
+docker compose up
+```
