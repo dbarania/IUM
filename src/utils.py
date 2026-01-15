@@ -29,6 +29,7 @@ def force_cleanup():
 
 
 HF_DEFAULT_HOME = os.environ.get("HF_HOME", "~/.cache/huggingface/hub")
+ENOUGH_VRAM = os.environ.get("ENOUGH_VRAM", "true") in ('true', "True", 1)
 
 
 def get_weight_dir(
@@ -47,7 +48,7 @@ def get_weight_dir(
     Returns:
         str: path to model weights within model directory
     """
-    model_dir = Path(model_dir)
+    model_dir = Path(model_dir).expanduser()
     assert model_dir.is_dir()
     model_path = model_dir / "--".join(["models", *model_ref.split("/")])
     assert model_path.is_dir()

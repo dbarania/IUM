@@ -2,16 +2,15 @@ import csv
 import os
 from langdetect import detect
 from alphabet_detector.alphabet_detector import AlphabetDetector
-from utils import TranslatedItem, force_cleanup
+from utils import TranslatedItem, force_cleanup, ENOUGH_VRAM
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, BitsAndBytesConfig
-import torch
 from loguru import logger
 from utils import get_weight_dir
 
 
 class Translator:
     _ad = AlphabetDetector()
-
+    _rest_device = 'cuda' if ENOUGH_VRAM else 'cpu'
     def __init__(self):
         self._config_path = ""
         self._language_map: dict | None = None
@@ -26,7 +25,7 @@ class Translator:
             translated_text = self.translate(text, source_code)
         else:
             logger.warning(f"[lang codes failure]:{text} | {lang} | {alph}")
-        self._model.to("cpu")
+        self._model.to(self._rest_device)
         force_cleanup()
         return TranslatedItem(translation=translated_text,
                               source_language=lang,
@@ -52,7 +51,7 @@ class Translator:
         weights_dir = get_weight_dir('facebook--nllb-200-distilled-600M')
         self._tokenizer = AutoTokenizer.from_pretrained(weights_dir)
         self._model = AutoModelForSeq2SeqLM.from_pretrained(weights_dir)
-        self._model.to("cpu")
+        self._model.to(self._rest_device)
 
     def reload_config(self):
         if os.path.isfile(self._config_path):
