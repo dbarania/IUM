@@ -37,7 +37,7 @@ class SummarizeApp:
         item.comment = translated.translation
         summary = self._base_model(item)
         logger.info(
-            f"[user]:{item_src}|{item.rate}|{translated.translation}|{translated.source_alphabet}|{translated.source_language}|{summary.summarized_comment}|{summary.confidence}")
+            f"[user]:[base]|{item_src}|{item.rate}|{translated.translation}|{translated.source_alphabet}|{translated.source_language}|{summary.summarized_comment}|{summary.confidence}")
         return summary
 
     def run_complex(self, item: ReviewItem) -> SummarizedItem:
@@ -46,7 +46,7 @@ class SummarizeApp:
         item.comment = translated.translation
         summary = self._complex_model(item)
         logger.info(
-            f"[user]:{item_src}|{item.rate}|{translated.translation}|{translated.source_alphabet}|{translated.source_language}|{summary.summarized_comment}|{summary.confidence}")
+            f"[user]:[complex]|{item_src}|{item.rate}|{translated.translation}|{translated.source_alphabet}|{translated.source_language}|{summary.summarized_comment}|{summary.confidence}")
         return summary
 
     def log(self):
