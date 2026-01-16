@@ -12,7 +12,7 @@ RUN mkdir -p /models
 
 RUN --mount=type=cache,target=/root/.cache/huggingface \
     hf download VisteK528/facebook-bart-cnn-ium-v3 --cache-dir /models && \
-    hf download Falconsai/text_summarization --cache-dir /models && \
+    hf download facebook/bart-large-cnn --cache-dir /models && \
     hf download facebook/nllb-200-distilled-600M --cache-dir /models
 
 WORKDIR /app
