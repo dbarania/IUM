@@ -1,0 +1,14 @@
+notebook
+pandas
+numpy
+nltk
+evaluate
+langdetect
+absl-py
+rouge-score
+matplotlib
+transformers
+protobuf
+torch
+torchvision
+requests
