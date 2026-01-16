@@ -21,15 +21,16 @@ class SummaryGenerator:
             max_length=1024,
             truncation=True
         ).to("cuda")
+
         summary_ids = self._model.generate(
             inputs["input_ids"],
-            max_length=100,
-            min_length=20,
+            max_length=142,
+            min_length=56,
             do_sample=False,
             num_beams=4,
             num_return_sequences=1,
-            early_stopping=True,
-            length_penalty = 2.0,
+            early_stopping=False,
+            length_penalty = 1.0,
             no_repeat_ngram_size=3
         )
 

@@ -8,7 +8,7 @@ from loguru import logger
 
 class SummarizeApp:
     def __init__(self):
-        base_model_name = "facebook--bart-large-cnn"
+        base_model_name = "Falconsai--text_summarization"
         complex_model_name = "VisteK528--facebook-bart-cnn-ium-v3"
         self._translator = Translator()
         self._translator.setup("translator_config")
