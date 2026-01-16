@@ -2,10 +2,14 @@ version: '3.8'
 
 services:
   ium_service:
-    image: ium_image:latest
+    image: dbarania/ium_summary_app
     container_name: ium-summary-srv
     ports:
       - "8000:8000"
+    environment:
+      - INSUFFICIENT_VRAM=${INSUFFICIENT_VRAM:-true}
+    volumes:
+      - ./summary_logs:/app/logs
     stdin_open: true
     tty: true
     deploy:

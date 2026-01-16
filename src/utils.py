@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 import os
 from pathlib import Path
 from typing import Optional
-
+from loguru import logger
 
 class ReviewItem(BaseModel):
     comment: str
@@ -29,8 +29,7 @@ def force_cleanup():
 
 
 HF_DEFAULT_HOME = os.environ.get("HF_HOME", "~/.cache/huggingface/hub")
-ENOUGH_VRAM = os.environ.get("ENOUGH_VRAM", "true") in ('true', "True", 1)
-
+ENOUGH_VRAM = not (os.environ.get("INSUFFICIENT_VRAM", "true") in ('true', "True", '1'))
 
 def get_weight_dir(
     model_ref: str,
